@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+
+
+    <android.support.design.widget.AppBarLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:theme="@style/AppTheme.NoActionBar">
+        <android.support.v7.widget.ButtonBarLayout android:layout_width="match_parent"
+                                                   android:layout_height="match_parent">
+            <EditText
+                    android:id="@+id/filename_prefix_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:hint="prefix"/>
+
+            <EditText
+                    android:id="@+id/filename_medium_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:hint="media"/>
+            <EditText
+                    android:id="@+id/filename_count_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_weight="0.5"
+                    android:hint="count"/>
+            <Button
+                    android:id="@+id/next_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="next"/>
+        </android.support.v7.widget.ButtonBarLayout>
+
+
+        <android.support.v7.widget.ButtonBarLayout android:layout_width="match_parent"
+                                                   android:layout_height="match_parent">
+            <Button
+                    android:id="@+id/stop_button"
+                    android:layout_width="match_parent"
+                    android:layout_weight="0.5"
+                    android:layout_height="match_parent"
+                    android:text="@string/stop"/>
+            <Button
+                    android:id="@+id/start_button"
+                    android:layout_width="match_parent"
+                    android:layout_weight="0.5"
+                    android:layout_height="match_parent"
+                    android:text="@string/start"/>
+            <Button
+                    android:id="@+id/send_button"
+                    android:layout_width="match_parent"
+                    android:layout_weight="0.5"
+                    android:layout_height="match_parent"
+                    android:text="@string/send"/>
+
+            <Button
+                    android:id="@+id/remove_button"
+                    android:layout_width="match_parent"
+                    android:layout_weight="0.5"
+                    android:layout_height="match_parent"
+                    android:text="@string/remove"/>
+
+        </android.support.v7.widget.ButtonBarLayout>
+
+        <android.support.v7.widget.ButtonBarLayout android:layout_width="match_parent"
+                                                   android:layout_height="match_parent">
+            <EditText
+                    android:id="@+id/ip_address_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:hint="@string/address_hint"/>
+            <EditText
+                    android:id="@+id/ip_port_edit_text"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_weight="0.5"
+                    android:hint="@string/port_hint"/>
+        </android.support.v7.widget.ButtonBarLayout>
+
+        <android.support.v7.widget.ButtonBarLayout android:layout_width="match_parent"
+                                                   android:layout_height="match_parent">
+            <EditText
+                    android:id="@+id/description_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_weight="0.5"
+                    android:hint="description"/>
+        </android.support.v7.widget.ButtonBarLayout>
+        <android.support.v7.widget.ButtonBarLayout android:layout_width="match_parent"
+                                                   android:layout_height="match_parent">
+            <Button
+                    android:id="@+id/show_list_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:text="show saved files"/>
+        </android.support.v7.widget.ButtonBarLayout>
+    </android.support.design.widget.AppBarLayout>
+
+    <include layout="@layout/content_main"/>
+
+
+
+</android.support.design.widget.CoordinatorLayout>
