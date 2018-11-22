@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
             })
 
             start_button.setOnClickListener({
-                Toast.makeText(this@MainActivity, "start_button", Toast.LENGTH_SHORT).show()
+                //                Toast.makeText(this@MainActivity, "start_button", Toast.LENGTH_SHORT).show()
                 try {
                     if (mediaPlayer!!.isPlaying) {
                         Toast.makeText(this@MainActivity, "playing", Toast.LENGTH_SHORT).show()
@@ -230,7 +230,6 @@ class MainActivity : AppCompatActivity() {
             if (msg?.what == 0) {
                 Toast.makeText(this@MainActivity, msg?.obj.toString(), Toast.LENGTH_LONG).show()
             }
-
         }
     }
 
@@ -240,6 +239,8 @@ class MainActivity : AppCompatActivity() {
         val buffer: ByteBuffer = ByteBuffer.allocateDirect(ConfigInfo.bufferSize!!)
         val byteArray: ByteArray = ByteArray(ConfigInfo.bufferSize!!)
         var len: Int = 0
+        while (audioRecord!!.recordingState != AudioRecord.RECORDSTATE_RECORDING) {
+        }
         sendMessage("start record")
         try {
             do {
