@@ -41,6 +41,6 @@
                 android:layout_height="wrap_content"
                 android:textSize="20dp"
                 android:textAlignment="center"
-                android:text="Shanghai Jiaotong University"/>
+                android:text="Shanghai Jiao Tong University"/>
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
