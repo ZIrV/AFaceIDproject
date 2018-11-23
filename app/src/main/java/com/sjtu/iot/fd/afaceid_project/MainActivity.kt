@@ -13,6 +13,7 @@ import android.net.Uri
 import android.os.*
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable
+import android.util.Log
 import android.widget.MediaController
 import android.widget.Toast
 
@@ -22,6 +23,7 @@ import java.io.File
 import java.io.OutputStream
 import java.lang.Exception
 import java.nio.ByteBuffer
+import java.text.MessageFormat
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -30,6 +32,7 @@ class MainActivity : AppCompatActivity() {
     val configInfo: ConfigInfo = ConfigInfo()
     var mediaPlayer: MediaPlayer? = null
     var audioRecord: AudioRecord? = null
+    val logTag: String = "MainActivitydddddddddd"
     private var isSeeking = false
 
 
@@ -38,6 +41,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.v(logTag, "onCreate")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         try {
@@ -69,11 +73,11 @@ class MainActivity : AppCompatActivity() {
                         Toast.makeText(this@MainActivity, "playing", Toast.LENGTH_SHORT).show()
                         return@setOnClickListener
                     }
-                    ConfigInfo.bufferSize = AudioRecord.getMinBufferSize(
-                        ConfigInfo.sampleRateInHz,
-                        ConfigInfo.channelConfig,
-                        ConfigInfo.audioFormat
-                    )
+//                    ConfigInfo.bufferSize = AudioRecord.getMinBufferSize(
+//                        ConfigInfo.sampleRateInHz,
+//                        ConfigInfo.channelConfig,
+//                        ConfigInfo.audioFormat
+//                    )
                     audioRecord = AudioRecord(
                         ConfigInfo.audioSource,
                         ConfigInfo.sampleRateInHz,
@@ -85,11 +89,10 @@ class MainActivity : AppCompatActivity() {
                     val filepath =
                         dataRootDir + "/" + configInfo.prefix + "/" + configInfo.medium + "/" + configInfo.count + ".pcm"
                     Thread({
+                        audioRecord!!.startRecording()
                         writeData(filepath)
                     }).start()
-                    audioRecord!!.startRecording()
-                    mediaPlayer!!.seekTo(0)
-                    mediaPlayer!!.start()
+                    Log.v(logTag, Date().time.toString())
                     chronometer.base = SystemClock.elapsedRealtime()
                     chronometer.start()
 //                Toast.makeText(this,"playing",Toast.LENGTH_SHORT).show()
@@ -236,16 +239,40 @@ class MainActivity : AppCompatActivity() {
     fun writeData(filepath: String) {
         val file: File = File(filepath)
         val outputStream: OutputStream = file.outputStream()
-        val buffer: ByteBuffer = ByteBuffer.allocateDirect(ConfigInfo.bufferSize!!)
-        val byteArray: ByteArray = ByteArray(ConfigInfo.bufferSize!!)
+        val buffer: ByteBuffer = ByteBuffer.allocateDirect(ConfigInfo.bufferSize!! / 3)
+        val byteArray: ByteArray = ByteArray(ConfigInfo.bufferSize!! / 3)
         var len: Int = 0
         while (audioRecord!!.recordingState != AudioRecord.RECORDSTATE_RECORDING) {
         }
+        //start media player after recorder starts
+        mediaPlayer!!.seekTo(0)
+        val startTime=SystemClock.elapsedRealtimeNanos()
+        mediaPlayer!!.start()
+        val endTime=SystemClock.elapsedRealtimeNanos()
+        Log.v(logTag,"media start time "+(endTime-startTime).toString())
+        //show  message
         sendMessage("start record")
+        var firstReadBlock = false
+        var previousTime=SystemClock.elapsedRealtimeNanos()
         try {
             do {
                 len = audioRecord!!.read(buffer, buffer.capacity())
+                var currentTime=SystemClock.elapsedRealtimeNanos()
+                Log.v(logTag,"read interval "+(currentTime-previousTime).toString())
+                previousTime=currentTime
                 buffer.rewind()
+                if (!firstReadBlock) {
+                    firstReadBlock = true
+                    Log.v(
+                        logTag,
+                        "time %s len %s blocksize %s".format(
+                            Date().time.toString(),
+                            len.toString(),
+                            ConfigInfo.bufferSize.toString()
+                        )
+                    )
+                    continue
+                }
                 if (len > 0) {
                     buffer.get(byteArray, 0, len)
                     buffer.clear()
@@ -255,6 +282,7 @@ class MainActivity : AppCompatActivity() {
         } finally {
             outputStream.close()
         }
+        //show message
         sendMessage("stop record")
     }
 
