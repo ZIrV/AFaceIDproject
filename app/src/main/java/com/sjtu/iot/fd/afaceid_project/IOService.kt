@@ -83,7 +83,7 @@ class IOService(rootDir: String) {
         var pw: PrintWriter? = null
         try {
             pw = PrintWriter(filepath)
-            pw.write(content + "\n")
+            pw.write(content)
         } finally {
             pw?.close()
         }
