@@ -88,6 +88,7 @@ class MainActivity : AppCompatActivity() {
                     updateTexts()
                     val filepath =
                         dataRootDir + "/" + configInfo.prefix + "/" + configInfo.medium + "/" + configInfo.count + ".pcm"
+                    ioService!!.mkdir(configInfo.prefix + "/" + configInfo.medium + "/")
                     Thread({
                         audioRecord!!.startRecording()
                         writeData(filepath)
@@ -215,7 +216,7 @@ class MainActivity : AppCompatActivity() {
 
     fun setupVideoView() {
 //        video_view.setVideoURI())
-        mediaPlayer = MediaPlayer.create(this, R.raw.jar_of_love)
+        mediaPlayer = MediaPlayer.create(this, R.raw.sound)
         progressSeekBar.max = mediaPlayer!!.duration
         val thread = Thread(Runnable {
             while (true) {
