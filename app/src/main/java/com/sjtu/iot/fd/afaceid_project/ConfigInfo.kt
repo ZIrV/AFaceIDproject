@@ -12,7 +12,7 @@ class ConfigInfo {
 
     companion object {
         const val audioSource: Int = MediaRecorder.AudioSource.MIC
-        const val sampleRateInHz: Int = 44100
+        const val sampleRateInHz: Int = 48000
         const val channelConfig = AudioFormat.CHANNEL_IN_MONO
         const val audioFormat = AudioFormat.ENCODING_PCM_16BIT
          var bufferSize: Int = 48000*2*2
