@@ -7,11 +7,11 @@ package com.sjtu.iot.fd.afaceid_project
 
 class FMDWWaveGenerator : WaveGenerator {
     companion object {
-        const val FREQUENCY_MARGIN = 350
+        const val FREQUENCY_MARGIN = 1000
         const val BASE_FREQUENCY = 17000 + 175
-        const val FREQUENCY_NUM = 15
+        const val FREQUENCY_NUM = 1
         const val T = 1 / 48000.0
-        const val BUFFER_SIZE = 24000
+        const val BUFFER_SIZE = 4096
     }
 
     var time: Double = 0.0
