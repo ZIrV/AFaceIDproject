@@ -247,10 +247,6 @@ class MainActivity : AppCompatActivity() {
         }
         //start media player after recorder starts
         mediaPlayer!!.seekTo(0)
-        val startTime=SystemClock.elapsedRealtimeNanos()
-        mediaPlayer!!.start()
-        val endTime=SystemClock.elapsedRealtimeNanos()
-        Log.v(logTag,"media start time "+(endTime-startTime).toString())
         //show  message
         sendMessage("start record")
         var firstReadBlock = false
@@ -263,6 +259,10 @@ class MainActivity : AppCompatActivity() {
                 previousTime=currentTime
                 buffer.rewind()
                 if (!firstReadBlock) {
+                    val startTime=SystemClock.elapsedRealtimeNanos()
+                    mediaPlayer!!.start()
+                    val endTime=SystemClock.elapsedRealtimeNanos()
+                    Log.v(logTag,"media start time "+(endTime-startTime).toString())
                     firstReadBlock = true
                     Log.v(
                         logTag,
