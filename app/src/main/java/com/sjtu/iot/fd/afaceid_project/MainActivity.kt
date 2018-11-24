@@ -7,6 +7,7 @@ package com.sjtu.iot.fd.afaceid_project
 import android.content.Context
 import android.content.Intent
 import android.media.AudioRecord
+import android.media.AudioTrack
 import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.net.Uri
@@ -30,18 +31,16 @@ class MainActivity : AppCompatActivity() {
     var dataRootDir: String? = null
     var ioService: IOService? = null
     val configInfo: ConfigInfo = ConfigInfo()
-    var mediaPlayer: MediaPlayer? = null
     var audioRecord: AudioRecord? = null
-    val logTag: String = "MainActivitydddddddddd"
+    var myAudioTrack: MyAudioTrack? = null
     private var isSeeking = false
-
+    private var starting:Boolean=false
 
     companion object {
         var staticIOService: IOService? = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.v(logTag, "onCreate")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         try {
@@ -68,16 +67,13 @@ class MainActivity : AppCompatActivity() {
 
             start_button.setOnClickListener({
                 //                Toast.makeText(this@MainActivity, "start_button", Toast.LENGTH_SHORT).show()
+                if (starting)
+                {
+                    sendMessage("is on")
+                    return@setOnClickListener
+                }
+                starting=true
                 try {
-                    if (mediaPlayer!!.isPlaying) {
-                        Toast.makeText(this@MainActivity, "playing", Toast.LENGTH_SHORT).show()
-                        return@setOnClickListener
-                    }
-//                    ConfigInfo.bufferSize = AudioRecord.getMinBufferSize(
-//                        ConfigInfo.sampleRateInHz,
-//                        ConfigInfo.channelConfig,
-//                        ConfigInfo.audioFormat
-//                    )
                     audioRecord = AudioRecord(
                         ConfigInfo.audioSource,
                         ConfigInfo.sampleRateInHz,
@@ -93,25 +89,24 @@ class MainActivity : AppCompatActivity() {
                         audioRecord!!.startRecording()
                         writeData(filepath)
                     }).start()
-                    Log.v(logTag, Date().time.toString())
                     chronometer.base = SystemClock.elapsedRealtime()
                     chronometer.start()
-//                Toast.makeText(this,"playing",Toast.LENGTH_SHORT).show()
                 } catch (e: Exception) {
+                    starting=false
                     Toast.makeText(this@MainActivity, e.toString(), Toast.LENGTH_SHORT)
                 }
             })
 
             stop_button.setOnClickListener({
-                if (!mediaPlayer!!.isPlaying) {
-                    Toast.makeText(this, "stopping", Toast.LENGTH_SHORT).show()
+                if(starting==false)
+                {
+                    sendMessage("is off")
                     return@setOnClickListener
                 }
+                starting=false
                 audioRecord!!.stop()
-                mediaPlayer!!.pause()
                 chronometer.stop()
-//                Toast.makeText(this,"stopping",Toast.LENGTH_SHORT).show()
-
+                myAudioTrack?.stopPlay()
             })
 
             send_button.setOnClickListener({
@@ -215,16 +210,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun setupVideoView() {
-//        video_view.setVideoURI())
-        mediaPlayer = MediaPlayer.create(this, R.raw.sound)
-        progressSeekBar.max = mediaPlayer!!.duration
-        val thread = Thread(Runnable {
-            while (true) {
-                Thread.sleep(500)
-                progressSeekBar.progress = mediaPlayer!!.currentPosition
-            }
-        })
-        thread.start()
     }
 
 
@@ -245,28 +230,23 @@ class MainActivity : AppCompatActivity() {
         var len: Int = 0
         while (audioRecord!!.recordingState != AudioRecord.RECORDSTATE_RECORDING) {
         }
-        //start media player after recorder starts
-        mediaPlayer!!.seekTo(0)
-        val startTime=SystemClock.elapsedRealtimeNanos()
-        mediaPlayer!!.start()
-        val endTime=SystemClock.elapsedRealtimeNanos()
-        Log.v(logTag,"media start time "+(endTime-startTime).toString())
-        //show  message
         sendMessage("start record")
         var firstReadBlock = false
-        var previousTime=SystemClock.elapsedRealtimeNanos()
+        var previousTime = SystemClock.elapsedRealtimeNanos()
         try {
             do {
                 len = audioRecord!!.read(buffer, buffer.capacity())
-                var currentTime=SystemClock.elapsedRealtimeNanos()
-                Log.v(logTag,"read interval "+(currentTime-previousTime).toString())
-                previousTime=currentTime
+                var currentTime = SystemClock.elapsedRealtimeNanos()
+                Log.v(ConfigInfo.logTag, "read interval " + (currentTime - previousTime).toString())
+                previousTime = currentTime
                 buffer.rewind()
                 if (!firstReadBlock) {
                     firstReadBlock = true
+                    myAudioTrack= MyAudioTrack(FMDWWaveGenerator(),handler)
+                    myAudioTrack?.startPlay()
                     Log.v(
-                        logTag,
-                        "time %s len %s blocksize %s".format(
+                        ConfigInfo.logTag,
+                        "record time %s len %s blocksize %s".format(
                             Date().time.toString(),
                             len.toString(),
                             ConfigInfo.bufferSize.toString()
@@ -284,6 +264,7 @@ class MainActivity : AppCompatActivity() {
             outputStream.close()
         }
         //show message
+        myAudioTrack?.stopPlay()
         sendMessage("stop record")
     }
 
