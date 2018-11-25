@@ -25,6 +25,9 @@ import java.lang.Exception
 import java.nio.ByteBuffer
 import java.text.MessageFormat
 import java.util.*
+import android.media.AudioManager
+
+
 
 class MainActivity : AppCompatActivity() {
     var dataRootDir: String? = null
@@ -138,7 +141,32 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         updateTexts()
         saveTexts()
+        mediaPlayer?.release()
+        audioRecord?.release()
     }
+
+
+
+    override fun onResume() {
+        super.onResume()
+        val mAudioManager = applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+//        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, , 0)
+        val musicVolume=mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+        previousMusicVolume=mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+        Log.v(logTag,"max volume "+musicVolume+" currentMusic Volume "+previousMusicVolume)
+        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 3, 0)
+    }
+
+    var previousMusicVolume:Int?=null
+    override fun onPause() {
+        super.onPause()
+        val mAudioManager = applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+//        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, , 0)
+        val musicVolume=mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, previousMusicVolume!!, 0)
+
+    }
+
 
     fun loadTexts() {
         val sharedPref = this.getPreferences(Context.MODE_PRIVATE);
@@ -261,6 +289,7 @@ class MainActivity : AppCompatActivity() {
                 if (!firstReadBlock) {
                     val startTime=SystemClock.elapsedRealtimeNanos()
                     mediaPlayer!!.start()
+
                     val endTime=SystemClock.elapsedRealtimeNanos()
                     Log.v(logTag,"media start time "+(endTime-startTime).toString())
                     firstReadBlock = true
