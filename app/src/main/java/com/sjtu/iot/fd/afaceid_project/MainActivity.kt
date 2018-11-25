@@ -167,9 +167,7 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
         val mAudioManager = applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 //        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, , 0)
-        val musicVolume=mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
         mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, previousMusicVolume!!, 0)
-
     }
 
 
