@@ -93,6 +93,11 @@ class MainActivity : AppCompatActivity() {
                         dataRootDir + "/" + configInfo.prefix + "/" + configInfo.medium + "/" + configInfo.count + ".pcm"
                     ioService!!.mkdir(configInfo.prefix + "/" + configInfo.medium + "/")
                     Thread({
+                        //start media player after recorder starts
+                        mediaPlayer!!.seekTo(0)
+                        //show  message
+                        mediaPlayer!!.start()
+                        while(!mediaPlayer!!.isPlaying()){}
                         audioRecord!!.startRecording()
                         writeData(filepath)
                     }).start()
@@ -154,7 +159,7 @@ class MainActivity : AppCompatActivity() {
         val musicVolume=mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
         previousMusicVolume=mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
         Log.v(logTag,"max volume "+musicVolume+" currentMusic Volume "+previousMusicVolume)
-        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 3, 0)
+        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 10, 0)
     }
 
     var previousMusicVolume:Int?=null
@@ -272,10 +277,7 @@ class MainActivity : AppCompatActivity() {
         val byteArray: ByteArray = ByteArray(ConfigInfo.bufferSize!! / 3)
         var len: Int = 0
 
-        //start media player after recorder starts
-        mediaPlayer!!.seekTo(0)
-        //show  message
-        mediaPlayer!!.start()
+
         sendMessage("start record")
         var previousTime=SystemClock.elapsedRealtimeNanos()
         try {
