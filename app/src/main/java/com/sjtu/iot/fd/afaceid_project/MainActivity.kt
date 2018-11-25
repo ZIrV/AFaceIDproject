@@ -271,38 +271,22 @@ class MainActivity : AppCompatActivity() {
         val buffer: ByteBuffer = ByteBuffer.allocateDirect(ConfigInfo.bufferSize!! / 3)
         val byteArray: ByteArray = ByteArray(ConfigInfo.bufferSize!! / 3)
         var len: Int = 0
-        while (audioRecord!!.recordingState != AudioRecord.RECORDSTATE_RECORDING) {
-        }
+
         //start media player after recorder starts
         mediaPlayer!!.seekTo(0)
         //show  message
+        mediaPlayer!!.start()
         sendMessage("start record")
-        var firstReadBlock = false
         var previousTime=SystemClock.elapsedRealtimeNanos()
         try {
+            while (audioRecord!!.recordingState != AudioRecord.RECORDSTATE_RECORDING) {
+            }
             do {
                 len = audioRecord!!.read(buffer, buffer.capacity())
                 var currentTime=SystemClock.elapsedRealtimeNanos()
                 Log.v(logTag,"read interval "+(currentTime-previousTime).toString())
                 previousTime=currentTime
                 buffer.rewind()
-                if (!firstReadBlock) {
-                    val startTime=SystemClock.elapsedRealtimeNanos()
-                    mediaPlayer!!.start()
-
-                    val endTime=SystemClock.elapsedRealtimeNanos()
-                    Log.v(logTag,"media start time "+(endTime-startTime).toString())
-                    firstReadBlock = true
-                    Log.v(
-                        logTag,
-                        "time %s len %s blocksize %s".format(
-                            Date().time.toString(),
-                            len.toString(),
-                            ConfigInfo.bufferSize.toString()
-                        )
-                    )
-                    continue
-                }
                 if (len > 0) {
                     buffer.get(byteArray, 0, len)
                     buffer.clear()
@@ -310,6 +294,7 @@ class MainActivity : AppCompatActivity() {
                 }
             } while (len > 0 || audioRecord!!.recordingState == AudioRecord.RECORDSTATE_RECORDING)
         } finally {
+            outputStream.flush()
             outputStream.close()
         }
         //show message
