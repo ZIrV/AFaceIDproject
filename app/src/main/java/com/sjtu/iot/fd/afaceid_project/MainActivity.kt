@@ -97,7 +97,7 @@ class MainActivity : AppCompatActivity() {
                         mediaPlayer!!.seekTo(0)
                         //show  message
                         mediaPlayer!!.start()
-                        while(!mediaPlayer!!.isPlaying()){}
+                        Thread.sleep(500)
                         audioRecord!!.startRecording()
                         writeData(filepath)
                     }).start()
