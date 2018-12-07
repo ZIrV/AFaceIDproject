@@ -94,7 +94,7 @@ class IOService(rootDir: String) {
 
     fun fileList(): ArrayList<String> {
         val fileList: ArrayList<File> = ArrayList()
-        val queue: Queue<File> = LinkedList()
+        val queue: Queue<File> = LinkedList<File>()
         queue.add(File(rootDir))
         while (!queue.isEmpty()) {
             val file = queue.poll()

@@ -86,8 +86,14 @@
                     android:layout_width="match_parent"
                     android:layout_weight="0.5"
                     android:hint="@string/port_hint"/>
-        </android.support.v7.widget.ButtonBarLayout>
 
+        </android.support.v7.widget.ButtonBarLayout>
+        <Button
+                android:id="@+id/connect_button"
+                android:layout_width="match_parent"
+                android:layout_weight="0.5"
+                android:layout_height="match_parent"
+                android:text="@string/connect"/>
         <android.support.v7.widget.ButtonBarLayout android:layout_width="match_parent"
                                                    android:layout_height="match_parent">
             <EditText

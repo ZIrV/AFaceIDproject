@@ -19,14 +19,13 @@ import android.widget.Toast
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
-import java.io.File
-import java.io.OutputStream
 import java.lang.Exception
 import java.nio.ByteBuffer
 import java.text.MessageFormat
 import java.util.*
 import android.media.AudioManager
-
+import java.io.*
+import java.net.Socket
 
 
 class MainActivity : AppCompatActivity() {
@@ -81,24 +80,20 @@ class MainActivity : AppCompatActivity() {
 //                        ConfigInfo.channelConfig,
 //                        ConfigInfo.audioFormat
 //                    )
-                    audioRecord = AudioRecord(
-                        ConfigInfo.audioSource,
-                        ConfigInfo.sampleRateInHz,
-                        ConfigInfo.channelConfig,
-                        ConfigInfo.audioFormat,
-                        ConfigInfo.bufferSize!!
-                    )
                     updateTexts()
                     val filepath =
                         dataRootDir + "/" + configInfo.prefix + "/" + configInfo.medium + "/" + configInfo.count + ".pcm"
                     ioService!!.mkdir(configInfo.prefix + "/" + configInfo.medium + "/")
                     Thread({
                         //start media player after recorder starts
+                        audioRecord!!.startRecording()
+                        writeData(filepath)
+                    }).start()
+                    Thread({
+//                        Thread.sleep(500)
                         mediaPlayer!!.seekTo(0)
                         //show  message
                         mediaPlayer!!.start()
-                        audioRecord!!.startRecording()
-                        writeData(filepath)
                     }).start()
                     Log.v(logTag, Date().time.toString())
                     chronometer.base = SystemClock.elapsedRealtime()
@@ -136,9 +131,37 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
             })
             setupVideoView()
+
+            connect_button.setOnClickListener({
+                connect()
+            })
         } catch (e: Exception) {
             Toast.makeText(this@MainActivity, e.toString(), Toast.LENGTH_SHORT).show()
         }
+    }
+
+    fun connect() {
+        Thread()
+        {
+            var socket = Socket(configInfo.ipAddress, configInfo.port+1)
+            val pw = PrintWriter(socket.getOutputStream())
+            val br = BufferedReader(InputStreamReader(socket.getInputStream()))
+            while (true) {
+                val content = br.readLine()
+                if (content == null) {
+                    break
+                }
+                if (content.equals("info")) {
+                    pw.println("prefix = ${configInfo.prefix} media = ${configInfo.medium} count= ${configInfo.count}")
+                }
+                sendMessage(content, 1)
+                sendMessage("received ${content}")
+                pw.println("ok!")
+                pw.flush()
+            }
+            socket.close()
+
+        }.start()
     }
 
     override fun onDestroy() {
@@ -150,22 +173,19 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
     override fun onResume() {
         super.onResume()
         val mAudioManager = applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-//        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, , 0)
-        val musicVolume=mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-        previousMusicVolume=mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-        Log.v(logTag,"max volume "+musicVolume+" currentMusic Volume "+previousMusicVolume)
+        val musicVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+        previousMusicVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+        Log.v(logTag, "max volume " + musicVolume + " currentMusic Volume " + previousMusicVolume)
         mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 10, 0)
     }
 
-    var previousMusicVolume:Int?=null
+    var previousMusicVolume: Int? = null
     override fun onPause() {
         super.onPause()
         val mAudioManager = applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-//        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, , 0)
         mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, previousMusicVolume!!, 0)
     }
 
@@ -246,6 +266,13 @@ class MainActivity : AppCompatActivity() {
 
     fun setupVideoView() {
 //        video_view.setVideoURI())
+        audioRecord = AudioRecord(
+            ConfigInfo.audioSource,
+            ConfigInfo.sampleRateInHz,
+            ConfigInfo.channelConfig,
+            ConfigInfo.audioFormat,
+            ConfigInfo.bufferSize!!
+        )
         mediaPlayer = MediaPlayer.create(this, R.raw.sound)
         progressSeekBar.max = mediaPlayer!!.duration
         val thread = Thread(Runnable {
@@ -263,7 +290,19 @@ class MainActivity : AppCompatActivity() {
             super.handleMessage(msg)
             if (msg?.what == 0) {
                 Toast.makeText(this@MainActivity, msg?.obj.toString(), Toast.LENGTH_LONG).show()
+            } else if (msg?.what == 1) {
+                handleOperation(msg?.obj.toString())
             }
+        }
+    }
+
+    private fun handleOperation(content: String) {
+        when (content) {
+            "start" -> start_button.callOnClick()
+            "stop" -> stop_button.callOnClick()
+            "remove" -> remove_button.callOnClick()
+            "next" -> next_button.callOnClick()
+            "send" -> send_button.callOnClick()
         }
     }
 
@@ -276,15 +315,12 @@ class MainActivity : AppCompatActivity() {
 
 
         sendMessage("start record")
-        var previousTime=SystemClock.elapsedRealtimeNanos()
+        var previousTime = SystemClock.elapsedRealtimeNanos()
         try {
             while (audioRecord!!.recordingState != AudioRecord.RECORDSTATE_RECORDING) {
             }
             do {
                 len = audioRecord!!.read(buffer, buffer.capacity())
-                var currentTime=SystemClock.elapsedRealtimeNanos()
-                Log.v(logTag,"read interval "+(currentTime-previousTime).toString())
-                previousTime=currentTime
                 buffer.rewind()
                 if (len > 0) {
                     buffer.get(byteArray, 0, len)
@@ -302,5 +338,9 @@ class MainActivity : AppCompatActivity() {
 
     fun sendMessage(str: String) {
         Message.obtain(handler, 0, str).sendToTarget()
+    }
+
+    fun sendMessage(str: String, what: Int) {
+        Message.obtain(handler, 1, str).sendToTarget()
     }
 }
