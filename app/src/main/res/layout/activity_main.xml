@@ -45,17 +45,17 @@
         <android.support.v7.widget.ButtonBarLayout android:layout_width="match_parent"
                                                    android:layout_height="match_parent">
             <Button
-                    android:id="@+id/stop_button"
-                    android:layout_width="match_parent"
-                    android:layout_weight="0.5"
-                    android:layout_height="match_parent"
-                    android:text="@string/stop"/>
-            <Button
                     android:id="@+id/start_button"
                     android:layout_width="match_parent"
                     android:layout_weight="0.5"
                     android:layout_height="match_parent"
                     android:text="@string/start"/>
+            <Button
+                    android:id="@+id/stop_button"
+                    android:layout_width="match_parent"
+                    android:layout_weight="0.5"
+                    android:layout_height="match_parent"
+                    android:text="@string/stop"/>
             <Button
                     android:id="@+id/send_button"
                     android:layout_width="match_parent"

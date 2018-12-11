@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity() {
                 mediaPlayer!!.pause()
                 chronometer.stop()
 //                Toast.makeText(this,"stopping",Toast.LENGTH_SHORT).show()
-
+                next_button.callOnClick()
             })
 
             send_button.setOnClickListener({
@@ -179,7 +179,7 @@ class MainActivity : AppCompatActivity() {
         val musicVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
         previousMusicVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
         Log.v(logTag, "max volume " + musicVolume + " currentMusic Volume " + previousMusicVolume)
-        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 8, 0)
+        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 3, 0)
     }
 
     var previousMusicVolume: Int? = null
