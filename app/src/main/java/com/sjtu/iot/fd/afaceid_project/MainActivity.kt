@@ -179,7 +179,7 @@ class MainActivity : AppCompatActivity() {
         val musicVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
         previousMusicVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
         Log.v(logTag, "max volume " + musicVolume + " currentMusic Volume " + previousMusicVolume)
-        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 3, 0)
+        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 10, 0)
     }
 
     var previousMusicVolume: Int? = null
