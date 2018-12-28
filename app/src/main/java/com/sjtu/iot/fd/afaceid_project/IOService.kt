@@ -59,11 +59,13 @@ class IOService(rootDir: String) {
     }
 
     fun send(ipAddress: String, port: Int) {
-        var byteOutputStream = ByteArrayOutputStream()
-        ZipUtils.toZip(rootDir, byteOutputStream, true)
-        var byteArray = byteOutputStream.toByteArray()
+
+//        var byteOutputStream = ByteArrayOutputStream()
         var socket = Socket(ipAddress, port)
-        socket.getOutputStream().write(byteArray)
+        ZipUtils.toZip(rootDir, socket.getOutputStream(), true)
+//        var byteArray = byteOutputStream.toByteArray()
+//        var socket = Socket(ipAddress, port)
+//        socket.getOutputStream().write(byteArray)
         socket.close()
     }
 
