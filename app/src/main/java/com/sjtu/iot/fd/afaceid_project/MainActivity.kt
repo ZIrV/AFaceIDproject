@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity() {
     var mediaPlayer: MediaPlayer? = null
     var audioRecord: AudioRecord? = null
     val logTag: String = "MainActivitydddddddddd"
+    var previousRemove: Long = SystemClock.elapsedRealtime()
     private var isSeeking = false
 
 
@@ -90,7 +91,7 @@ class MainActivity : AppCompatActivity() {
                         writeData(filepath)
                     }).start()
                     Thread({
-//                        Thread.sleep(500)
+                        //                        Thread.sleep(500)
                         mediaPlayer!!.seekTo(0)
                         //show  message
                         mediaPlayer!!.start()
@@ -122,6 +123,12 @@ class MainActivity : AppCompatActivity() {
 
             remove_button.setOnClickListener({
                 var message: String?
+                val timeDiff= SystemClock.elapsedRealtime()-this.previousRemove
+                if (timeDiff > 100) {
+                    this.previousRemove=SystemClock.elapsedRealtime()
+                    return@setOnClickListener
+                }
+                this.previousRemove=SystemClock.elapsedRealtime()
                 try {
                     this.ioService!!.removeAll()
                 } catch (e: Exception) {
@@ -143,7 +150,7 @@ class MainActivity : AppCompatActivity() {
     fun connect() {
         Thread()
         {
-            var socket = Socket(configInfo.ipAddress, configInfo.port+1)
+            var socket = Socket(configInfo.ipAddress, configInfo.port + 1)
             val pw = PrintWriter(socket.getOutputStream())
             val br = BufferedReader(InputStreamReader(socket.getInputStream()))
             while (true) {
