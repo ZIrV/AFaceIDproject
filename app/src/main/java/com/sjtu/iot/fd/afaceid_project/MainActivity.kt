@@ -124,7 +124,7 @@ class MainActivity : AppCompatActivity() {
             remove_button.setOnClickListener({
                 var message: String?
                 val timeDiff= SystemClock.elapsedRealtime()-this.previousRemove
-                if (timeDiff > 100) {
+                if (timeDiff > 700) {
                     this.previousRemove=SystemClock.elapsedRealtime()
                     return@setOnClickListener
                 }
