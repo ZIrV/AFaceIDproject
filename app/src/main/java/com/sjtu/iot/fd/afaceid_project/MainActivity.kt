@@ -348,6 +348,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun sendMessage(str: String, what: Int) {
-        Message.obtain(handler, 1, str).sendToTarget()
+        Message.obtain(handler, what, str).sendToTarget()
     }
 }
