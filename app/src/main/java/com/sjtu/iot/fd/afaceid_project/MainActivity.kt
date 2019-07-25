@@ -280,7 +280,7 @@ class MainActivity : AppCompatActivity() {
             ConfigInfo.audioFormat,
             ConfigInfo.bufferSize!!
         )
-        mediaPlayer = MediaPlayer.create(this, R.raw.sound)
+        mediaPlayer = MediaPlayer.create(this, R.raw.sound2)
         progressSeekBar.max = mediaPlayer!!.duration
         val thread = Thread(Runnable {
             while (true) {
