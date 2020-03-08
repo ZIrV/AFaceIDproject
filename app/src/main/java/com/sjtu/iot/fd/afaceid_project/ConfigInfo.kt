@@ -25,7 +25,7 @@ class ConfigInfo {
     var countKey = "count"
     var count: Int = 1
     var ipAddressKey = "ipAddress"
-    var ipAddress: String = "192.168.0.100"
+    var ipAddress: String = "192.168.11.104"
     var portKey = "port"
     var port: Int = 9999
     var descriptionKey = "description"

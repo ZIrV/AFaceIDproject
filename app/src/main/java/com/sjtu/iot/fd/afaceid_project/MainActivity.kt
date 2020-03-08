@@ -4,8 +4,10 @@
  */
 package com.sjtu.iot.fd.afaceid_project
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.media.AudioRecord
 import android.media.MediaPlayer
 import android.media.MediaRecorder
@@ -24,6 +26,9 @@ import java.nio.ByteBuffer
 import java.text.MessageFormat
 import java.util.*
 import android.media.AudioManager
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
+import android.widget.EditText
 import java.io.*
 import java.net.Socket
 
@@ -32,12 +37,23 @@ class MainActivity : AppCompatActivity() {
     var dataRootDir: String? = null
     var ioService: IOService? = null
     val configInfo: ConfigInfo = ConfigInfo()
-    var mediaPlayer: MediaPlayer? = null
-    var audioRecord: AudioRecord? = null
-    val logTag: String = "MainActivitydddddddddd"
-    var previousRemove: Long = SystemClock.elapsedRealtime()
+    private var mediaPlayer: MediaPlayer? = null
+    private var audioRecord: AudioRecord? = null
+    private val logTag: String = "MainActivitydddddddddd"
+    private var previousRemove: Long = SystemClock.elapsedRealtime()
     private var isSeeking = false
 
+    private val MY_WRITE_EXTERNAL_STORAGE=1;
+    private val MY_READ_EXTERNAL_STORAGE=2;
+    private val MY_INTERNET=4;
+    private val MY_RECORD_AUDIO=3;
+
+    private val MY_DEFAULT_REQCODE=100;
+
+
+    enum class MyPermissions{
+        MY_READ_EXTERNAL_STORAGE,MY_WRITE_EXTERNAL_STORAGE
+    }
 
     companion object {
         var staticIOService: IOService? = null
@@ -47,6 +63,18 @@ class MainActivity : AppCompatActivity() {
         Log.v(logTag, "onCreate")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        //请求文件权限
+        requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,MY_WRITE_EXTERNAL_STORAGE);
+        requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE,MY_READ_EXTERNAL_STORAGE);
+        requestPermission(Manifest.permission.INTERNET,MY_INTERNET);
+        //初始化多媒体
+        //warning:如果一开始没有允许权限，后面操作时就会因为没有初始化而闪退
+        if (requestPermission(Manifest.permission.RECORD_AUDIO,MY_RECORD_AUDIO)==1) {
+            setupVideoView();
+        }
+
+
         try {
             this.dataRootDir = "/data/data/" + packageName + "/temp/"
             ioService = IOService(this.dataRootDir as String)
@@ -54,22 +82,22 @@ class MainActivity : AppCompatActivity() {
             loadTexts()
             showTexts()
 
-            show_list_button.setOnClickListener({
+            show_list_button.setOnClickListener{
                 var intent = Intent(this@MainActivity, SavedFileListActivity::class.java)
                 startActivity(intent)
             }
-            )
 
-            next_button.setOnClickListener({
+
+            next_button.setOnClickListener{
                 updateTexts()
                 var dirName = configInfo.prefix + "/" + configInfo.medium
                 ioService!!.mkdir(dirName)
                 configInfo.count += 1
                 showTexts()
                 saveTexts()
-            })
+            }
 
-            start_button.setOnClickListener({
+            start_button.setOnClickListener{
                 //                Toast.makeText(this@MainActivity, "start_button", Toast.LENGTH_SHORT).show()
                 try {
                     if (mediaPlayer!!.isPlaying) {
@@ -85,17 +113,17 @@ class MainActivity : AppCompatActivity() {
                     val filepath =
                         dataRootDir + "/" + configInfo.prefix + "/" + configInfo.medium + "/" + configInfo.count + ".pcm"
                     ioService!!.mkdir(configInfo.prefix + "/" + configInfo.medium + "/")
-                    Thread({
+                    Thread{
                         //start media player after recorder starts
                         audioRecord!!.startRecording()
                         writeData(filepath)
-                    }).start()
-                    Thread({
+                    }.start()
+                    Thread{
                         //                        Thread.sleep(500)
                         mediaPlayer!!.seekTo(0)
                         //show  message
                         mediaPlayer!!.start()
-                    }).start()
+                    }.start()
                     Log.v(logTag, Date().time.toString())
                     chronometer.base = SystemClock.elapsedRealtime()
                     chronometer.start()
@@ -103,9 +131,9 @@ class MainActivity : AppCompatActivity() {
                 } catch (e: Exception) {
                     Toast.makeText(this@MainActivity, e.toString(), Toast.LENGTH_SHORT)
                 }
-            })
+            }
 
-            stop_button.setOnClickListener({
+            stop_button.setOnClickListener{
                 if (!mediaPlayer!!.isPlaying) {
                     Toast.makeText(this, "stopping", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
@@ -115,13 +143,13 @@ class MainActivity : AppCompatActivity() {
                 chronometer.stop()
 //                Toast.makeText(this,"stopping",Toast.LENGTH_SHORT).show()
                 next_button.callOnClick()
-            })
+            }
 
-            send_button.setOnClickListener({
+            send_button.setOnClickListener{
                 NetworkTask().execute()
-            })
+            }
 
-            remove_button.setOnClickListener({
+            remove_button.setOnClickListener{
                 var message: String?
                 val timeDiff= SystemClock.elapsedRealtime()-this.previousRemove
                 if (timeDiff > 700) {
@@ -136,21 +164,86 @@ class MainActivity : AppCompatActivity() {
                 }
                 message = "success"
                 Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
-            })
-            setupVideoView()
+            }
 
-            connect_button.setOnClickListener({
+
+            connect_button.setOnClickListener{
                 connect()
-            })
+            }
         } catch (e: Exception) {
             Toast.makeText(this@MainActivity, e.toString(), Toast.LENGTH_SHORT).show()
         }
     }
 
+
+    //封装的请求权限函数
+    fun requestPermission(permissionString:String, requestCode: Int):Int{
+        if (ContextCompat.checkSelfPermission(this, permissionString)
+            != PackageManager.PERMISSION_GRANTED) {
+            // Permission is not granted
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    permissionString)) {
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                ActivityCompat.requestPermissions(this,arrayOf(permissionString),
+                    requestCode)
+                return 1;
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,arrayOf(permissionString),
+                    requestCode)
+                return 1;
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+
+        }
+        else{
+            println(permissionString+"got");
+            return 1;
+        }
+
+    }
+
+    //请求权限结果
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<String>, grantResults: IntArray) {
+        when (requestCode) {
+            MY_WRITE_EXTERNAL_STORAGE -> {
+                // If request is cancelled, the result arrays are empty.
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    println(permissions[0]+"got");
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return
+            }
+
+            // Add other 'when' lines to check for other
+            // permissions this app might request.
+            else -> {
+                // Ignore all other requests.
+            }
+        }
+    }
+
+
+
+
     fun connect() {
         Thread()
         {
-            var socket = Socket(configInfo.ipAddress, configInfo.port + 1)
+            val ipText=findViewById<EditText>(R.id.ip_address_edit_text).text.toString();
+            val portText=findViewById<EditText>(R.id.ip_port_edit_text).text.toString();
+            val portNum=portText.toInt();
+            println("==connecting "+ipText+":"+portText);
+            //var socket = Socket(configInfo.ipAddress, configInfo.port + 1)
+            var socket=Socket(ipText,portNum);
             val pw = PrintWriter(socket.getOutputStream())
             val br = BufferedReader(InputStreamReader(socket.getInputStream()))
             while (true) {
@@ -271,9 +364,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    //初始化audiorecord
     fun setupVideoView() {
 //        video_view.setVideoURI())
-        audioRecord = AudioRecord(
+            audioRecord = AudioRecord(
             ConfigInfo.audioSource,
             ConfigInfo.sampleRateInHz,
             ConfigInfo.channelConfig,
