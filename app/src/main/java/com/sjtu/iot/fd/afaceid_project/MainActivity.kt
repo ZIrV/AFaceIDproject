@@ -238,12 +238,12 @@ class MainActivity : AppCompatActivity() {
     fun connect() {
         Thread()
         {
-            val ipText=findViewById<EditText>(R.id.ip_address_edit_text).text.toString();
-            val portText=findViewById<EditText>(R.id.ip_port_edit_text).text.toString();
-            val portNum=portText.toInt();
-            println("==connecting "+ipText+":"+portText);
-            //var socket = Socket(configInfo.ipAddress, configInfo.port + 1)
-            var socket=Socket(ipText,portNum);
+            //val ipText=findViewById<EditText>(R.id.ip_address_edit_text).text.toString();
+            //val portText=findViewById<EditText>(R.id.ip_port_edit_text).text.toString();
+            //val portNum=portText.toInt();
+            //var socket=Socket(ipText,portNum);
+            var socket = Socket(configInfo.ipAddress, configInfo.port)
+            println("==connecting "+configInfo.ipAddress+":"+configInfo.port);
             val pw = PrintWriter(socket.getOutputStream())
             val br = BufferedReader(InputStreamReader(socket.getInputStream()))
             while (true) {
@@ -291,7 +291,7 @@ class MainActivity : AppCompatActivity() {
 
 
     fun loadTexts() {
-        val sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        val sharedPref = this.getSharedPreferences(resources.getString(R.string.preference_file_key),Context.MODE_PRIVATE);
         this.configInfo.port = sharedPref.getInt(this.configInfo.portKey, this.configInfo.port)
         this.configInfo.ipAddress = sharedPref.getString(this.configInfo.ipAddressKey, this.configInfo.ipAddress)
         this.configInfo.count = sharedPref.getInt(this.configInfo.countKey, this.configInfo.count)
@@ -330,7 +330,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun saveTexts() {
-        val sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        val sharedPref = this.getSharedPreferences(resources.getString(R.string.preference_file_key),Context.MODE_PRIVATE);
         var editor = sharedPref.edit()
         editor.putString(this.configInfo.prefixKey, this.configInfo.prefix)
         editor.putString(this.configInfo.mediumKey, this.configInfo.medium)
