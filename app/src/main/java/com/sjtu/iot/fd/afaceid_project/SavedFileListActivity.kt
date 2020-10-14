@@ -21,7 +21,7 @@ class SavedFileListActivity : AppCompatActivity() {
         val fileList = MainActivity.staticIOService!!.fileList()
         val adapter =
             object : ArrayAdapter<String>(this, android.R.layout.simple_list_item_2, android.R.id.text1, fileList) {
-                override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+                override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                     val view = super.getView(position, convertView, parent)
                     val text1 = view.findViewById(android.R.id.text1) as TextView
                     val text2 = view.findViewById(android.R.id.text2) as TextView

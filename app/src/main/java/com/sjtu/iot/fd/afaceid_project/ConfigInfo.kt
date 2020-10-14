@@ -11,22 +11,21 @@ class ConfigInfo {
 
 
     companion object {
-        const val audioSource: Int = MediaRecorder.AudioSource.MIC
-        const val sampleRateInHz: Int = 48000
+        var audioSource: Int = MediaRecorder.AudioSource.MIC
+        var sampleRateInHz: Int = 48000
         const val channelConfig = AudioFormat.CHANNEL_IN_MONO
-        const val audioFormat = AudioFormat.ENCODING_PCM_16BIT
+        const val audioFormat = AudioFormat.ENCODING_PCM_FLOAT
          var bufferSize: Int = 48000*2*2
-        const val logTag: String = "MainActivitydddddddddd"
     }
 
-    var prefixKey: String = "prefix"
-    var prefix: String = "distance"
-    var mediumKey: String = "medium"
-    var medium: String = "name"
-    var countKey = "count"
+    var prefixKey: String? = "prefix"
+    var prefix: String? = "distance"
+    var mediumKey: String? = "medium"
+    var medium: String? = "name"
+    var countKey: String? = "count"
     var count: Int = 1
     var ipAddressKey = "ipAddress"
-    var ipAddress: String = "192.168.0.100"
+    var ipAddress: String = "192.168.11.104"
     var portKey = "port"
     var port: Int = 9999
     var descriptionKey = "description"

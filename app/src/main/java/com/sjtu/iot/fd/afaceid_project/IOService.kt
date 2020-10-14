@@ -4,6 +4,7 @@
  */
 package com.sjtu.iot.fd.afaceid_project
 
+import android.util.Log
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileReader
@@ -15,7 +16,6 @@ import java.nio.file.Paths
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.coroutines.experimental.suspendCoroutine
 
 class IOService(rootDir: String) {
     val rootDir: String = rootDir
@@ -23,7 +23,7 @@ class IOService(rootDir: String) {
     init {
         var rootDirFile = File(rootDir)
         if (!rootDirFile.exists()) {
-            rootDirFile.mkdir()
+            var temp=rootDirFile.mkdirs()
         }
     }
 
@@ -31,7 +31,7 @@ class IOService(rootDir: String) {
         val dirPath = rootDir + "/" + dir
         val file = File(dirPath)
         if (!file.exists()) {
-            file.mkdir()
+            file.mkdirs()
         }
     }
 
@@ -59,16 +59,19 @@ class IOService(rootDir: String) {
     }
 
     fun send(ipAddress: String, port: Int) {
-        var byteOutputStream = ByteArrayOutputStream()
-        ZipUtils.toZip(rootDir, byteOutputStream, true)
-        var byteArray = byteOutputStream.toByteArray()
+
+//        var byteOutputStream = ByteArrayOutputStream()
         var socket = Socket(ipAddress, port)
-        socket.getOutputStream().write(byteArray)
+        ZipUtils.toZip(rootDir, socket.getOutputStream(), true)
+//        var byteArray = byteOutputStream.toByteArray()
+//        var socket = Socket(ipAddress, port)
+//        socket.getOutputStream().write(byteArray)
         socket.close()
     }
 
     fun mkdir(dirName: String) {
         var file = File(rootDir + '/' + dirName)
+        System.out.println(file)
         if (!file.exists()) {
             file.mkdirs()
         }
@@ -80,6 +83,7 @@ class IOService(rootDir: String) {
         if (!file.exists()) {
             file.mkdirs()
         }
+
         var pw: PrintWriter? = null
         try {
             pw = PrintWriter(filepath)
@@ -94,7 +98,7 @@ class IOService(rootDir: String) {
 
     fun fileList(): ArrayList<String> {
         val fileList: ArrayList<File> = ArrayList()
-        val queue: Queue<File> = LinkedList()
+        val queue: Queue<File> = LinkedList<File>()
         queue.add(File(rootDir))
         while (!queue.isEmpty()) {
             val file = queue.poll()

@@ -25,12 +25,13 @@
                      android:textAlignment="center"
                      android:textSize="30dp"
         />
+
         <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="30dp"
+                android:text="Authored by IOT and RFID Lab"
                 android:textAlignment="center"
-                android:text="Authored by Iot and Rifd Lab"/>
+                android:textSize="30dp" />
         <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

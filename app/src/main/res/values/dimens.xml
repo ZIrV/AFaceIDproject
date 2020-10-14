@@ -1,3 +1,5 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="debug_info_textsize">19sp</dimen>
+    <dimen name="default_title">24sp</dimen>
 </resources>
