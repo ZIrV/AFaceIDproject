@@ -13,17 +13,24 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+
         <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-        />
+                android:layout_weight="0.5" >
+
+            <SeekBar
+                    android:id="@+id/progressSeekBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+        </LinearLayout>
+
         <Chronometer android:id="@+id/chronometer"
                      android:layout_width="match_parent"
                      android:layout_height="wrap_content"
                      android:layout_weight="1"
                      android:textAlignment="center"
-                     android:textSize="30dp"
+                     android:textSize="30sp"
         />
 
         <TextView

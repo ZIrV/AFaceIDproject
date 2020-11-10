@@ -1,1 +1,2 @@
-pythonw3 dataserver.py 
+python dataserver.py 
+pause

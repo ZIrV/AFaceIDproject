@@ -15,7 +15,8 @@ class ConfigInfo {
         var sampleRateInHz: Int = 48000
         const val channelConfig = AudioFormat.CHANNEL_IN_MONO
         const val audioFormat = AudioFormat.ENCODING_PCM_FLOAT
-         var bufferSize: Int = 48000*2*2
+        var bufferSize: Int = 48000*2*2
+        val logTag: String="MainActivity:"
     }
 
     var prefixKey: String? = "prefix"
