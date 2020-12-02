@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
     private val logTag: String = "afaceid_MainActivity"
     private var previousRemove: Long = SystemClock.elapsedRealtime()
 
-    private var audioSourceFile:String?="gsm44k"
+    private var audioSourceFile:String?="sound"
 
     private val MY_WRITE_EXTERNAL_STORAGE=1;
     private val MY_READ_EXTERNAL_STORAGE=2;
