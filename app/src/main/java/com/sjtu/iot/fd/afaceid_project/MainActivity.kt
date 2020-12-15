@@ -36,6 +36,7 @@ class MainActivity : AppCompatActivity() {
     private var dataRootDir: String? = null
     var ioService: IOService? = null
     val configInfo: ConfigInfo = ConfigInfo()
+    var socket: Socket? = null
     private var mediaPlayer: MediaPlayer? = null
     private var audioRecord: AudioRecord? = null
     private val logTag: String = "afaceid_MainActivity"
@@ -194,6 +195,7 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this@MainActivity, e.toString(), Toast.LENGTH_SHORT).show()
         }
         connect_button.setOnClickListener{
+            updateTexts()
             connect()
         }
         send_button.setOnClickListener{
@@ -318,28 +320,35 @@ class MainActivity : AppCompatActivity() {
 
     //连接数据传输服务器的函数
     private fun connect() {
+        //println("77777777777777777777777777-7777777777777777777777777777")
+        //println("==connecting "+configInfo.ipAddress+":"+configInfo.port)
         Thread()
         {
-            updateTexts()
-            val socket = Socket(configInfo.ipAddress, configInfo.port)
-            println("==connecting "+configInfo.ipAddress+":"+configInfo.port)
-            val pw = PrintWriter(socket.getOutputStream())
-            val br = BufferedReader(InputStreamReader(socket.getInputStream()))
-            while (true) {
-                val content = br.readLine()
-                if (content == null) {
-                    break
-                }
-                if (content.equals("info")) {
-                    pw.println("prefix = ${configInfo.prefix} media = ${configInfo.medium} count= ${configInfo.count}")
-                }
-                sendMessage(content, 1)
-                sendMessage("received ${content}")
-                pw.println("ok!")
-                pw.flush()
-            }
-            socket.close()
+            //updateTexts()
+            println("123123")
+            try {
+                socket = Socket(configInfo.ipAddress, configInfo.port) //通过socket连接服务器,参数ip为服务端ip地址，port为服务端监听端口
+                println("==connecting "+configInfo.ipAddress+":"+configInfo.port)
+                val pw = PrintWriter(socket!!.getOutputStream())
+                val br = BufferedReader(InputStreamReader(socket!!.getInputStream()))
 
+                while (true) {
+                    val content = br.readLine()
+                    if (content == null) {
+                        break
+                    }
+                    if (content.equals("info")) {
+                        pw.println("prefix = ${configInfo.prefix} media = ${configInfo.medium} count= ${configInfo.count}")
+                    }
+                    sendMessage(content, 1)
+                    sendMessage("received ${content}")
+                    pw.println("ok!")
+                    pw.flush()
+                }
+                //socket!!.close()
+            } catch (e: Exception) {
+                println("connect fault")
+            }
         }.start()
     }
 
@@ -430,7 +439,7 @@ class MainActivity : AppCompatActivity() {
 
         override fun doInBackground(vararg p0: Void?): String {
             try {
-                ioService!!.send(configInfo.ipAddress, configInfo.port)
+                socket?.let { ioService!!.send_to(it) }
             } catch (e: Exception) {
                 return "connection error %s".format(e.toString())
             }

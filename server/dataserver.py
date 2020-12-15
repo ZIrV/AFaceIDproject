@@ -8,8 +8,10 @@ import time
 class FileServer(socketserver.BaseRequestHandler):
     def handle(self):
         filename = time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime(time.time()))
+
         print('connected from:', self.client_address)
         with self.request:
+            print(self.request.recv(1024))
             with open(filename+".zip", 'wb') as file:
                 while True:
                     rdata = self.request.recv(1024)
@@ -17,6 +19,6 @@ class FileServer(socketserver.BaseRequestHandler):
                         break
                     file.write(rdata)
 
-
-s1 = socketserver.ThreadingTCPServer(("0.0.0.0", 9999), FileServer)
+s1 = socketserver.ThreadingTCPServer(('192.168.0.117', 30000), FileServer)
+print('hello world')
 s1.serve_forever()

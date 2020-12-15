@@ -58,15 +58,15 @@ class IOService(rootDir: String) {
         return dir.delete()
     }
 
-    fun send(ipAddress: String, port: Int) {
+    fun send_to(socket: Socket) {
 
 //        var byteOutputStream = ByteArrayOutputStream()
-        var socket = Socket(ipAddress, port)
+        //var socket = Socket(ipAddress, port)
         ZipUtils.toZip(rootDir, socket.getOutputStream(), true)
 //        var byteArray = byteOutputStream.toByteArray()
 //        var socket = Socket(ipAddress, port)
 //        socket.getOutputStream().write(byteArray)
-        socket.close()
+        //socket.close()
     }
 
     fun mkdir(dirName: String) {

@@ -25,13 +25,16 @@ def medfilter (data):
     return pdata
 
 def getData():
-    filepath = 'D:/zq/OneDrive/experiments/2019/20191013/lipcontrol/data3/'
+    filepath = 'E:/sounddata/'
     files=os.listdir(filepath)
     for file in files:
+        
         pattern = re.compile(r'\d+')
         res = re.findall(pattern,file)
-        if len(res) == 3 and int(res[0]) == 3 and int(res[1]) >= 30 and int(res[1]) < 31:
+        if True:
+        # if len(res) == 3 and int(res[0]) == 3 and int(res[1]) >= 30 and int(res[1]) < 31:
             filename = filepath+file
+            print(filename)
             rawdata = np.memmap(filename, dtype=np.float32, mode='r')
             # freq, t, zxx = stft(rawdata, fs=fs, nperseg=48000, noverlap=47000)
             # plt.figure()
