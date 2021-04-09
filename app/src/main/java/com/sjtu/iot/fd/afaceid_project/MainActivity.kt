@@ -307,7 +307,7 @@ class MainActivity : AppCompatActivity() {
 
     //处理弹出其它activity界面后返回的结果
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
-        if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        if (requestCode == READ_REQUEST_CODE && resultCode == RESULT_OK) {
             // The document selected by the user won't be returned in the intent.
             // Instead, a URI to that document will be contained in the return intent
             // provided to this method as a parameter.
@@ -365,7 +365,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        val mAudioManager = applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val mAudioManager = applicationContext.getSystemService(AUDIO_SERVICE) as AudioManager
         val musicVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
         previousMusicVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
         Log.v(logTag, "max volume " + musicVolume + " currentMusic Volume " + previousMusicVolume)
@@ -375,13 +375,15 @@ class MainActivity : AppCompatActivity() {
     var previousMusicVolume: Int? = null
     override fun onPause() {
         super.onPause()
-        val mAudioManager = applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val mAudioManager = applicationContext.getSystemService(AUDIO_SERVICE) as AudioManager
         mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, previousMusicVolume!!, 0)
     }
 
 
     private fun loadTexts() {
-        val sharedPref = this.getSharedPreferences(resources.getString(R.string.preference_file_key),Context.MODE_PRIVATE)
+        val sharedPref = this.getSharedPreferences(resources.getString(R.string.preference_file_key),
+            MODE_PRIVATE
+        )
         this.configInfo.port = sharedPref.getInt(this.configInfo.portKey, this.configInfo.port)
         this.configInfo.ipAddress = sharedPref.getString(this.configInfo.ipAddressKey, this.configInfo.ipAddress)!!
         this.configInfo.count = sharedPref.getInt(this.configInfo.countKey, this.configInfo.count)
@@ -420,7 +422,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun saveTexts() {
-        val sharedPref = this.getSharedPreferences(resources.getString(R.string.preference_file_key),Context.MODE_PRIVATE)
+        val sharedPref = this.getSharedPreferences(resources.getString(R.string.preference_file_key),
+            MODE_PRIVATE
+        )
         val editor = sharedPref.edit()
         editor.putString(this.configInfo.prefixKey, this.configInfo.prefix)
         editor.putString(this.configInfo.mediumKey, this.configInfo.medium)
@@ -441,7 +445,7 @@ class MainActivity : AppCompatActivity() {
 
         override fun doInBackground(vararg p0: Void?): String {
             try {
-                //socket?.let { ioService!!.send_to(it) }
+
                 val outputStream: OutputStream? = socket?.getOutputStream()
                 val buffer: ByteBuffer = ByteBuffer.allocateDirect(ConfigInfo.bufferSize / 3)
                 val byteArray: ByteArray = ByteArray(ConfigInfo.bufferSize / 3)
@@ -458,7 +462,7 @@ class MainActivity : AppCompatActivity() {
                             buffer.get(byteArray, 0, len)
                             buffer.clear()
                             outputStream?.write(byteArray, 0, len)
-                            //println(len)
+
                         }
                     } while (len > 0 || audioRecord!!.recordingState == AudioRecord.RECORDSTATE_RECORDING)
                 } finally {
@@ -484,7 +488,7 @@ class MainActivity : AppCompatActivity() {
     fun setupVideoView() {
 //        video_view.setVideoURI())
         //根据手机是否支持，设置录音未经处理的音源
-        val audioManager=getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val audioManager=getSystemService(AUDIO_SERVICE) as AudioManager
         if (audioManager.getProperty(AudioManager.PROPERTY_SUPPORT_AUDIO_SOURCE_UNPROCESSED)!=null){
             ConfigInfo.audioSource=MediaRecorder.AudioSource.UNPROCESSED
             debuginfo_micinfo+="audio source: unprocessed"
@@ -599,6 +603,8 @@ class MainActivity : AppCompatActivity() {
                     buffer.get(byteArray, 0, len)
                     buffer.clear()
                     outputStream.write(byteArray, 0, len)
+                    var f =byteArray[4].toFloat()
+                    println(f)
                 }
             } while (len > 0 || audioRecord!!.recordingState == AudioRecord.RECORDSTATE_RECORDING)
         } finally {
