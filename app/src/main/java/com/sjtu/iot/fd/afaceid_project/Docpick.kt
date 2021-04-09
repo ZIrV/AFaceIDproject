@@ -1,6 +1,6 @@
 package com.sjtu.iot.fd.afaceid_project
 import android.content.Intent
-import android.support.v4.app.ActivityCompat.startActivityForResult
+import androidx.core.app.ActivityCompat.startActivityForResult
 import android.app.Activity
 
 

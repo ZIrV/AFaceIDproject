@@ -13,7 +13,7 @@ import android.content.pm.PackageManager
 import android.media.*
 import android.net.Uri
 import android.os.*
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.util.Log
 
@@ -22,8 +22,8 @@ import kotlinx.android.synthetic.main.content_main.*
 import java.lang.Exception
 import java.nio.ByteBuffer
 import java.util.*
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import android.view.View
 import android.widget.*
 import java.io.*
@@ -132,6 +132,7 @@ class MainActivity : AppCompatActivity() {
                         Thread {
                             //start media player after recorder starts
                             audioRecord!!.startRecording()
+                            NetworkTask().execute()
                             writeData(filepath)
                         }.start()
                         Thread {
@@ -199,7 +200,7 @@ class MainActivity : AppCompatActivity() {
             connect()
         }
         send_button.setOnClickListener{
-            NetworkTask().execute()
+            //NetworkTask().execute()
         }
         debug_info_button.setOnClickListener{
             val intent=Intent(this,DebugInfoActivity::class.java).apply {
@@ -321,11 +322,11 @@ class MainActivity : AppCompatActivity() {
     //连接数据传输服务器的函数
     private fun connect() {
         //println("77777777777777777777777777-7777777777777777777777777777")
-        //println("==connecting "+configInfo.ipAddress+":"+configInfo.port)
+        println("==connecting "+configInfo.ipAddress+":"+configInfo.port)
         Thread()
         {
             //updateTexts()
-            println("123123")
+            //println("123123")
             try {
                 socket = Socket(configInfo.ipAddress, configInfo.port) //通过socket连接服务器,参数ip为服务端ip地址，port为服务端监听端口
                 println("==connecting "+configInfo.ipAddress+":"+configInfo.port)
@@ -347,6 +348,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 //socket!!.close()
             } catch (e: Exception) {
+                println(e)
                 println("connect fault")
             }
         }.start()
@@ -439,7 +441,33 @@ class MainActivity : AppCompatActivity() {
 
         override fun doInBackground(vararg p0: Void?): String {
             try {
-                socket?.let { ioService!!.send_to(it) }
+                //socket?.let { ioService!!.send_to(it) }
+                val outputStream: OutputStream? = socket?.getOutputStream()
+                val buffer: ByteBuffer = ByteBuffer.allocateDirect(ConfigInfo.bufferSize / 3)
+                val byteArray: ByteArray = ByteArray(ConfigInfo.bufferSize / 3)
+                var len: Int = 0
+
+                var previousTime = SystemClock.elapsedRealtimeNanos()
+                try {
+                    while (audioRecord!!.recordingState != AudioRecord.RECORDSTATE_RECORDING) {
+                    }
+                    do {
+                        len = audioRecord!!.read(buffer, buffer.capacity())
+                        buffer.rewind()
+                        if (len > 0) {
+                            buffer.get(byteArray, 0, len)
+                            buffer.clear()
+                            outputStream?.write(byteArray, 0, len)
+                            //println(len)
+                        }
+                    } while (len > 0 || audioRecord!!.recordingState == AudioRecord.RECORDSTATE_RECORDING)
+                } finally {
+                    outputStream?.flush()
+                    outputStream?.close()
+
+
+                }
+                //show message
             } catch (e: Exception) {
                 return "connection error %s".format(e.toString())
             }
@@ -576,6 +604,7 @@ class MainActivity : AppCompatActivity() {
         } finally {
             outputStream.flush()
             outputStream.close()
+
         }
         //show message
         sendMessage("stop record")

@@ -1,2 +1,0 @@
-python dataserver.py 
-pause

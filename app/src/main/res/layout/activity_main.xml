@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
@@ -9,11 +9,11 @@
 
 
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:theme="@style/AppTheme.NoActionBar">
-        <android.support.v7.widget.ButtonBarLayout android:layout_width="match_parent"
+        <androidx.appcompat.widget.ButtonBarLayout android:layout_width="match_parent"
                                                    android:layout_height="match_parent">
             <EditText
                     android:id="@+id/filename_prefix_edit_text"
@@ -39,7 +39,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="next"/>
-        </android.support.v7.widget.ButtonBarLayout>
+        </androidx.appcompat.widget.ButtonBarLayout>
 
 
         <LinearLayout
@@ -58,7 +58,7 @@
                     android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <android.support.v7.widget.ButtonBarLayout
+        <androidx.appcompat.widget.ButtonBarLayout
                 android:layout_width="match_parent"
                 android:layout_height="69dp">
 
@@ -90,9 +90,9 @@
                     android:layout_weight="0.5"
                     android:text="@string/remove" />
 
-        </android.support.v7.widget.ButtonBarLayout>
+        </androidx.appcompat.widget.ButtonBarLayout>
 
-        <android.support.v7.widget.ButtonBarLayout android:layout_width="match_parent"
+        <androidx.appcompat.widget.ButtonBarLayout android:layout_width="match_parent"
                                                    android:layout_height="match_parent">
             <EditText
                     android:id="@+id/ip_address_edit_text"
@@ -107,14 +107,14 @@
                     android:layout_weight="0.5"
                     android:hint="@string/port_hint"/>
 
-        </android.support.v7.widget.ButtonBarLayout>
+        </androidx.appcompat.widget.ButtonBarLayout>
         <Button
                 android:id="@+id/connect_button"
                 android:layout_width="match_parent"
                 android:layout_weight="0.5"
                 android:layout_height="match_parent"
                 android:text="@string/connect"/>
-        <android.support.v7.widget.ButtonBarLayout android:layout_width="match_parent"
+        <androidx.appcompat.widget.ButtonBarLayout android:layout_width="match_parent"
                                                    android:layout_height="match_parent">
 
             <EditText
@@ -124,10 +124,10 @@
                     android:layout_weight="0.5"
                     android:hint="description" />
 
-        </android.support.v7.widget.ButtonBarLayout>
+        </androidx.appcompat.widget.ButtonBarLayout>
 
 
-        <android.support.v7.widget.ButtonBarLayout android:layout_width="match_parent"
+        <androidx.appcompat.widget.ButtonBarLayout android:layout_width="match_parent"
                                                    android:layout_height="match_parent">
             <Button
                     android:id="@+id/show_list_button"
@@ -135,7 +135,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
                     android:text="@string/show_saved_files"/>
-        </android.support.v7.widget.ButtonBarLayout>
+        </androidx.appcompat.widget.ButtonBarLayout>
 
         <LinearLayout
                 android:layout_width="match_parent"
@@ -151,10 +151,10 @@
 
         </LinearLayout>
 
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <include layout="@layout/content_main"/>
 
 
 
-</android.support.design.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -4,12 +4,12 @@
  */
 package com.sjtu.iot.fd.afaceid_project
 
+import android.media.AudioRecord
+import android.os.SystemClock
 import android.util.Log
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileReader
-import java.io.PrintWriter
+import java.io.*
 import java.net.Socket
+import java.nio.ByteBuffer
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -62,11 +62,13 @@ class IOService(rootDir: String) {
 
 //        var byteOutputStream = ByteArrayOutputStream()
         //var socket = Socket(ipAddress, port)
-        ZipUtils.toZip(rootDir, socket.getOutputStream(), true)
+//        ZipUtils.toZip(rootDir, socket.getOutputStream(), true)
 //        var byteArray = byteOutputStream.toByteArray()
 //        var socket = Socket(ipAddress, port)
 //        socket.getOutputStream().write(byteArray)
         //socket.close()
+
+
     }
 
     fun mkdir(dirName: String) {
